@@ -23,8 +23,9 @@ target=$dest
 removeFile="false"
 verbose="-v 1"
 dir_batch=""
-#debug= "--stop-at duration:30"
 debug=""
+debug="--stop-at duration:30"
+
 #Halt on any error
 set -e
 
@@ -73,7 +74,7 @@ func_usage()
 func_converter()
 {
 
-	HandBrakeCLI -i $source -o $target $verbose $debug -e x264 -2 -T -b 386 -B 96 -R Auto -X 624 --keep-display-aspect -s 1 --subtitle-burn 1 -x ref=2:bframes=2:subq=6:mixed-refs=0:trellis=0:b-pyramid=strict
+	eval HandBrakeCLI -i "\"$source\"" -o "\"$target\"" $verbose $debug -e x264 -2 -T -b 386 -B 96 -R Auto -X 624 --keep-display-aspect -s 1 --subtitle-burn 1 -x ref=2:bframes=2:subq=6:mixed-refs=0:trellis=0:b-pyramid=strict
 	
 	if [ $? != 0 ]
     then
@@ -92,9 +93,9 @@ func_converter_batch()
 	
 	func_info "Discovering files (*.avi) in $dir_batch …"
 
-	find ${dir_batch} -type f -name "*.avi" | while read objs; 
-		do
-		 echo "Calling converter to => "$objs
+	find ${dir_batch} -type f -name \*.mkv -print0 | xargs -0 ls | \
+		while read objs; do
+		 echo "Calling converter to => $objs"
 		 source=$objs
 		 target="${source%.*}.mp4"
 		 
